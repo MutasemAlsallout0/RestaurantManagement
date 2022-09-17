@@ -121,8 +121,8 @@ namespace RestaurantManagement.Models
             });
 
             modelBuilder.Entity<Customer>().HasQueryFilter(x => x.Archived == 0);
-            modelBuilder.Entity<Restaurantt>().HasQueryFilter(x => x.Archived != 0);
-            modelBuilder.Entity<RestaurantMenu>().HasQueryFilter(x => x.Archived != 0);
+            modelBuilder.Entity<Restaurantt>().HasQueryFilter(x => x.Archived == 0);
+            modelBuilder.Entity<RestaurantMenu>().HasQueryFilter(x => x.Archived == 0);
 
             OnModelCreatingPartial(modelBuilder);
         }
