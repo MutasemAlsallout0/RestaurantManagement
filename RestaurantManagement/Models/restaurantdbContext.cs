@@ -120,7 +120,7 @@ namespace RestaurantManagement.Models
                     .HasConstraintName("FK_RestaurantMenuCustomer_RestaurantMenu");
             });
 
-            modelBuilder.Entity<Customer>().HasQueryFilter(x => x.Archived != 0);
+            modelBuilder.Entity<Customer>().HasQueryFilter(x => x.Archived == 0);
             modelBuilder.Entity<Restaurantt>().HasQueryFilter(x => x.Archived != 0);
             modelBuilder.Entity<RestaurantMenu>().HasQueryFilter(x => x.Archived != 0);
 
