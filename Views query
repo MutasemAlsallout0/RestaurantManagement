@@ -1,4 +1,4 @@
-//////Customer View
+//////////////////////////////////////Customer View
 
 CREATE TABLE [dbo].[Customer](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
@@ -13,7 +13,7 @@ CREATE TABLE [dbo].[Customer](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 
-/////Restaurant
+////////////////////////////Restaurant
 
 CREATE TABLE [dbo].[Restaurant](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
@@ -52,6 +52,8 @@ REFERENCES [dbo].[Restaurant] ([Id])
 GO
 
 ALTER TABLE [dbo].[RestaurantMenu] CHECK CONSTRAINT [FK_RestaurantMenu_Restaurant]
+GO
+
 
 
 
@@ -72,6 +74,15 @@ ALTER TABLE [dbo].[RestaurantMenuCustomer]  WITH CHECK ADD  CONSTRAINT [FK_Resta
 REFERENCES [dbo].[Customer] ([Id])
 GO
 
+ALTER TABLE [dbo].[RestaurantMenuCustomer] CHECK CONSTRAINT [FK_RestaurantMenuCustomer_Customer]
+GO
+
+ALTER TABLE [dbo].[RestaurantMenuCustomer]  WITH CHECK ADD  CONSTRAINT [FK_RestaurantMenuCustomer_RestaurantMenu] FOREIGN KEY([RestaurantMenuId])
+REFERENCES [dbo].[RestaurantMenu] ([Id])
+GO
+
+ALTER TABLE [dbo].[RestaurantMenuCustomer] CHECK CONSTRAINT [FK_RestaurantMenuCustomer_RestaurantMenu]
+GO
 
 
 //////////////////csvReport
