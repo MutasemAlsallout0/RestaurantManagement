@@ -1,0 +1,93 @@
+//////Customer View
+
+CREATE TABLE [dbo].[Customer](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[FirstName] [nvarchar](250) NOT NULL,
+	[LastName] [nvarchar](250) NOT NULL,
+	[CreatedDate] [datetime] NOT NULL DEFAULT GETDATE(),
+	[UpdatedDate] [datetime] NOT NULL DEFAULT GETDATE(),
+	[Archived] [tinyint] NOT NULL,
+ CONSTRAINT [PK_Customer] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+
+/////Restaurant
+
+CREATE TABLE [dbo].[Restaurant](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Name] [nvarchar](250) NOT NULL,
+	[PhoneNumber] [nvarchar](250) NOT NULL,
+	[CreatedDate] [datetime] NOT NULL DEFAULT GETDATE(),
+	[UpdatedDate] [datetime] NOT NULL DEFAULT GETDATE(),
+	[Archived] [tinyint] NOT NULL,
+ CONSTRAINT [PK_Restaurant] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+
+/////////////RestaurantMenu
+
+CREATE TABLE [dbo].[RestaurantMenu](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[MealName] [nvarchar](250) NOT NULL,
+	[PriceInNis] [float] NOT NULL,
+	[PriceInUsd] [float] NOT NULL,
+	[Quantity] [int] NOT NULL,
+	[CreatedDate] [datetime] NOT NULL DEFAULT GETDATE(),
+	[UpdatedDate] [datetime] NOT NULL DEFAULT GETDATE(),
+	[Archived] [tinyint] NOT NULL,
+	[RestaurantId] [int] NOT NULL,
+ CONSTRAINT [PK_RestaurantMenu] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[RestaurantMenu]  WITH CHECK ADD  CONSTRAINT [FK_RestaurantMenu_Restaurant] FOREIGN KEY([RestaurantId])
+REFERENCES [dbo].[Restaurant] ([Id])
+GO
+
+ALTER TABLE [dbo].[RestaurantMenu] CHECK CONSTRAINT [FK_RestaurantMenu_Restaurant]
+
+
+
+//////////////////RestaurantMenuCustomer
+
+CREATE TABLE [dbo].[RestaurantMenuCustomer](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[CustomerId] [int] NOT NULL,
+	[RestaurantMenuId] [int] NOT NULL,
+ CONSTRAINT [PK_RestaurantMenuCustomer] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[RestaurantMenuCustomer]  WITH CHECK ADD  CONSTRAINT [FK_RestaurantMenuCustomer_Customer] FOREIGN KEY([CustomerId])
+REFERENCES [dbo].[Customer] ([Id])
+GO
+
+
+
+//////////////////csvReport
+
+create view [dbo].[csvReport] as (
+SELECT dbo.Restaurant.Name AS RestaurantName,
+COUNT(dbo.RestaurantMenuCustomer.Id) AS NumberOfOrderedCustomer,
+SUM(dbo.RestaurantMenu.PriceInNis) AS ProfitInNis,
+SUM(dbo.RestaurantMenu.PriceInUsd) AS ProfitInUsd, 
+                  MAX(dbo.RestaurantMenu.MealName) AS TheBestSellingMeal,
+				  MAX(dbo.Customer.FirstName) AS MostPurchasedCustomer
+	FROM     dbo.Customer INNER JOIN
+                  dbo.RestaurantMenu ON dbo.Customer.Id = dbo.RestaurantMenu.Id INNER JOIN
+                
+        dbo.RestaurantMenuCustomer ON dbo.RestaurantMenuCustomer.CustomerId = dbo.Customer.Id INNER JOIN
+		   dbo.Restaurant ON dbo.Restaurant.Id = dbo.RestaurantMenu.Id
+	GROUP BY dbo.Restaurant.Name, dbo.RestaurantMenu.MealName, dbo.Customer.FirstName
+);
+ALTER TABLE [dbo].[RestaurantMenuCustomer] CHECK CONSTRAINT [FK_RestaurantMenuCustomer_Customer]
